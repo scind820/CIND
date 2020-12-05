@@ -15,9 +15,12 @@ import plotly.graph_objs as go
 from dash.dependencies import Input, Output
 import dash_table
 from fuzzywuzzy import fuzz 
+import dash_bootstrap_components as dbc
+
+app = dash.Dash(external_stylesheets=[dbc.themes.CYBORG])
 
 
-app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
+
 server = app.server
 
 
@@ -199,6 +202,20 @@ attributes = html.Div(
                 dbc.ListGroupItemHeading("Duration"),
                 dbc.ListGroupItemText(id = "Duration"),
             ]),
+             dbc.ListGroupItem([
+                dbc.ListGroupItemHeading("Director"),
+                dbc.ListGroupItemText(id = "Director"),
+                ]),
+              
+              dbc.ListGroupItem([
+                dbc.ListGroupItemHeading("Language"),
+                dbc.ListGroupItemText(id = "Language"),
+                ]),
+              dbc.ListGroupItem([
+                dbc.ListGroupItemHeading("Year"),
+                dbc.ListGroupItemText(id = "Year"),
+                ]),
+        
             ],
             align="center"
         )
@@ -227,11 +244,8 @@ def fuzz_table():
             columns = [{"name": i, "id": i} for i in df_fuzz],
             data = df_fuzz.to_dict('records'),
             style_as_list_view=True,
-            style_cell={'padding': '5px'},
-            style_header={
-            'backgroundColor': 'white',
-            'fontWeight': 'bold'
-            },
+            style_header={'backgroundColor': 'rgb(30, 30, 30)','fontWeight': 'bold'},
+            style_cell={'backgroundColor': 'rgb(50, 50, 50)','color': 'white','padding': '5px'},
             style_cell_conditional=[
                 {
             'if': {'column_id': c},
@@ -256,17 +270,18 @@ app.layout = dbc.Container(
         id='demo-dropdown',
         options=names,
         value=''
-    ),
+    ), 
         html.Hr(),
-        html.H1(id = "title-string"),
+        html.H3(id = "title-string"),
         html.Hr(),
         attributes,
         html.Hr(),
         description,
         html.Hr(),
-        html.H2("Movies Recommended For You!"),
+        html.H3("Movies Recommended For You!"),
         fuzz_table(),
         html.Div(id="tab-content", className="p-4"),
+        
         
     ]
 )
@@ -298,6 +313,31 @@ def output_text2(text2):
 def output_text3(text3):
     genre = df.loc[df["Title"] == text3, "Genre"].values[0]
     return str(genre)
+
+@app.callback(
+            Output('Director', 'children'),
+            [Input('demo-dropdown', 'value')]
+        )
+def output_text1(text1):
+    director = df.loc[df["Title"] == text1, "director"].values[0]
+    return str(director)
+
+@app.callback(
+            Output('Language', 'children'),
+            [Input('demo-dropdown', 'value')]
+        )
+def output_text9(text9):
+    language = df.loc[df["Title"] == text9, "Language"].values[0]
+    return str(language)
+
+@app.callback(
+            Output('Year', 'children'),
+            [Input('demo-dropdown', 'value')]
+        )
+def output_text8(text8):
+    year = df.loc[df["Title"] == text8, "Year"].values[0]
+    return str(year)
+
 
 
 @app.callback(
